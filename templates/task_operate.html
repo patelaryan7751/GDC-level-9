@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div>
+    <div class=" border-2 border-orange-500 px-2 py-2  mt-5 mx-3" style="height:auto">
+        <h1 class="text-3xl font-bold py-7">
+            {% if request.path == "/create-task/" %}
+            Create Todo
+            {% else %}
+            Update Todo
+            {% endif %}
+        </h1>
+
+        <form action="" method="post" class="text-lg w-full">
+            {% csrf_token %}
+            <!-- Title -->
+            <div class="w-full my-2">
+                <label for="{{ form.title.id_for_label }}">Title:</label>
+                <input id="{{ form.title.id_for_label }}" name="{{ form.title.name }}"
+                    value="{% if form.title.value %}{{form.title.value}}{% endif %}" type="{{ form.title.widget_type }}"
+                    class="focus:outline-none focus:border-rose-200 focus:ring-rose-200 focus:ring-1 bg-slate-100 rounded-lg p-3 w-full" />
+                <span class="text-rose-500">{{ form.title.errors }}</span>
+            </div>
+            <br>
+            <!-- Description -->
+            <div class="w-full my-2">
+                <label for="{{ form.description.id_for_label }}">Description:</label>
+                <textarea id="{{ form.description.id_for_label }}" name="{{ form.description.name }}"
+                    type="{{ form.description.widget_type }}"
+                    class="bg-slate-100 focus:outline-none focus:border-rose-200 focus:ring-rose-200 focus:ring-1 rounded-md p-3 w-full checked:bg-rose-500 ">
+                          {% if form.description.value %}{{form.description.value}}{% endif %}</textarea>
+                <span class="text-rose-500">{{ form.description.errors }}</span>
+            </div>
+
+            <br>
+            <!-- Priority -->
+            <div class="w-full my-2">
+                <label for="{{ form.priority.id_for_label }}">Priority:</label>
+                <input id="{{ form.priority.id_for_label }}" name="{{ form.priority.name }}"
+                    value="{% if form.priority.value %}{{form.priority.value}}{% endif %}"
+                    type="{{ form.priority.widget_type }}"
+                    class="bg-slate-100 rounded-lg p-3 w-full  border-slate-300 focus:outline-none focus:border-rose-200 focus:ring-rose-200 focus:ring-1" />
+                <span class="text-rose-500">{{ form.priority.errors }}</span>
+            </div>
+
+            <br>
+            <!-- status -->
+            <div class="w-full my-2">
+                <label for="{{ form.status.id_for_label }}">Status:</label>
+                {{form.status}}
+                <span class="text-rose-500">{{ form.status.errors }}</span>
+            </div>
+
+
+            <!-- Completed -->
+            <br>
+            <div class="w-full mt-2 p-1">
+                {{form.completed}}
+                <span class="ml-2">{{ form.completed.label }}</span>
+            </div>
+
+            {% if form.non_field_errors %}
+            <ul class="py-2 text-justify">
+                {% for error in form.non_field_errors %}
+                <li class="text-red-500">{{ error|escape }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <br>
+            <!-- Submit -->
+            <button type="submit" class="text-center w-full bg-red-500 text-white rounded-lg px-4 py-4 mt-3">
+                {% if request.path == "/create-task/" %}
+                Add Task
+                {% else %}
+                Update Task
+                {% endif %}
+            </button>
+        </form>
+
+    </div>
+</div>
+{% endblock %}
