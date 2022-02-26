@@ -97,6 +97,7 @@ class AllView_Test(TestCase):
 
 
 class ApiTest(TestCase):
+
     def setUp(self):
         # Every test needs access to the request factory.
         self.factory = RequestFactory()
