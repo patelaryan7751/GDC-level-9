@@ -20,4 +20,4 @@ def taskhistory_Update(sender, instance, **kwargs):
             print("old task: ", previous.status)
             print("current:", current.status)
             TaskHistory.objects.create(
-                task_id=instance, old_status=previous.status, new_status=current.status)
+                task=instance, old_status=previous.status, new_status=current.status)

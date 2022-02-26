@@ -1,5 +1,5 @@
-from celery.schedules import crontab
-
+from celery.decorators import periodic_task
+from datetime import datetime, timedelta
 
 from tasks.models import STATUS_CHOICES, Task, TaskEmail
 
@@ -10,40 +10,29 @@ from task_manager.celery import app
 from django.contrib.auth.models import User
 
 
-@app.on_after_configure.connect
-def setup_periodic_tasks(sender, **kwargs):
-    for user in User.objects.all():
-        obj, _ = TaskEmail.objects.get_or_create(user=user)
+@periodic_task(run_every=timedelta(seconds=10))
+def send_email_reminder():
+    now = datetime.now().hour
+    if TaskEmail.objects.filter(mail_time=now):
+        for userReport in TaskEmail.objects.filter(mail_time=now):
+            user = User.objects.get(id=userReport.user.id)
 
-    #     sender.add_periodic_task(
-    #     crontab(hour=7, minute=30, day_of_week=1),
-    #     test.s('Happy Mondays!'),
-    # )
-        sender.add_periodic_task(
-            crontab(hour=obj.mail_time),
-            task_mail.s(user.id),
+            # Create content and subject
+            subject = f"{user}'s Report"
+            content = "***************** Your tasks report **********:\n\n"
+            email = "tasks@taskmanager.org",
+            sendingto_email = user.email
+        for choice in STATUS_CHOICES:
+            pending_qs = Task.objects.filter(
+                user=user, status=choice[0], deleted=False)
+            content += f"-Task Status:{choice[0]}:\n\n Task count:{pending_qs.count}\n"
+
+        send_mail(
+            subject,
+            content,
+            email,
+            sendingto_email,
+            fail_silently=False,
         )
 
-
-@app.task
-# def test(arg):
-#     print(arg)
-def task_mail(user):
-    subject = f"{user}'s Report"
-    content = "***************** Your tasks report **********:\n\n"
-    email = "tasks@taskmanager.org",
-    sendingto_email = user.email
-    for choice in STATUS_CHOICES:
-        pending_qs = Task.objects.filter(
-            user=user, status=choice[0], deleted=False)
-        content += f"-Task Status:{choice[0]}:\n\n Task count:{pending_qs.count}\n"
-
-    send_mail(
-        subject,
-        content,
-        email,
-        sendingto_email,
-        fail_silently=False,
-    )
-
-    print(f"{user} email sent!!")
+        print(f"{user} email sent!!")

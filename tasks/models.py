@@ -28,7 +28,7 @@ class Task(models.Model):
 
 
 class TaskHistory(models.Model):
-    task_id = models.ForeignKey(Task, on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
     old_status = models.CharField(max_length=100, choices=STATUS_CHOICES)
     new_status = models.CharField(max_length=100, choices=STATUS_CHOICES)
     updation_date = models.DateTimeField(auto_now=True)
